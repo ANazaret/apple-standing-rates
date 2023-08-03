@@ -201,7 +201,10 @@ def analysis_to_latex_table(
 
 
 def analysis_throughout_day(
-    control_variables, target_minutes=[50], hour_range=(6, 24), model="linear"
+    control_variables: list[str],
+    target_minutes: list[int] = [50],
+    hour_range=(6, 24),
+    model: str = "linear",
 ):
     """
     Analyze standing rate each hour of the day for
@@ -209,6 +212,13 @@ def analysis_throughout_day(
 
     Parameters
     ----------
+    control_variables : list of str
+        The control variables to use. Only the names in CONTROL_SUBGROUPS_FIGURE are supported. All the subgroups
+        will be read from CONTROL_SUBGROUPS_FIGURE.
+    target_minutes : list of int, optional (default=[50])
+        The minutes of the hour to use as target.
+    hour_range : tuple of int, optional (default=(6, 24))
+        The range of hours to use. The first hour is included, the last hour is excluded.
     model : str, optional (default="linear")
         The model to use for the regression discontinuity. Either "linear" or "logistic".
 
@@ -272,6 +282,9 @@ def analysis_throughout_day(
 
 
 def make_figure_5():
+    """
+    Make figure 5 of the paper.
+    """
     target_minutes = [50, 55]
     results_throughout_day = analysis_throughout_day(
         control_variables=["All"], target_minutes=target_minutes
@@ -402,6 +415,9 @@ def make_figure_5():
 
 
 def make_figure_6():
+    """
+    Make figure 6 of the paper.
+    """
 
     target_minutes = [50]
     fig, axs = plt.subplots(3, 2, figsize=[8, 8], dpi=180)
