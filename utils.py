@@ -7,7 +7,13 @@ import numpy as np
 import pandas as pd
 
 
-def load_data(folder_path: str, control_variable: str = "All") -> pd.DataFrame:
+def load_data(
+    folder_path: str,
+    control_variable: str = "All",
+    delta_min=None,
+    delta_max=None,
+    remove_delta_12=True,
+) -> pd.DataFrame:
     """
     Load the data that is in the given folder path.
     The exact file to load is determined by the `control_variable` - it is hardcoded.
@@ -27,6 +33,12 @@ def load_data(folder_path: str, control_variable: str = "All") -> pd.DataFrame:
         - "energy_group": the energy group
         - "exercise_group": the exercise group
         - "stand_group": the stand group
+    delta_min : int
+        The minimum delta to consider (inclusive).
+    delta_max : int
+        The maximum delta to consider (inclusive).
+    remove_delta_12 : bool
+        Whether to remove the delta 12 from the data (see paper for more details).
 
     Returns
     -------
@@ -77,8 +89,18 @@ def load_data(folder_path: str, control_variable: str = "All") -> pd.DataFrame:
             }
         )
     data["u_probability"] = (data["stand_minutes"] > 0).astype(int) * data["count"]
+    data["stand"] = (data["stand_minutes"] > 0).astype(int)
+    if delta_min is None:
+        delta_min = data["delta"].min()
+    if delta_max is None:
+        delta_max = data["delta"].max()
+    data = data[data["delta"].between(delta_min, delta_max)]
+    if remove_delta_12:
+        data = data[data["delta"] != 12]
     return data
 
+
+# The following are the counts for the different control variables.
 
 biological_sex_counts = {
     "biological_sex": ["Female", "Male", "Other"],
